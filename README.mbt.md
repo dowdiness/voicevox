@@ -89,6 +89,29 @@ Run the CLI help for the full option list:
 moon run --target native cmd/synthesize -- --help
 ```
 
+## Pi extension
+
+This repository includes a project-local pi extension at `.pi/extensions/voicevox-tts.ts`. It can read assistant responses aloud by calling `cmd/synthesize` and playing the generated WAV.
+
+Setup:
+
+1. Copy `.pi/voicevox-tts.example.json` to `.pi/voicevox-tts.json` and edit the paths, or keep your personal config at `~/.pi/agent/voicevox-tts.json`.
+2. Reload pi from this repository with `/reload` or restart pi.
+3. Check the extension with `/voicevox-tts status`.
+4. Run `/voicevox-tts test 読み上げテスト`.
+
+Commands:
+
+```text
+/voicevox-tts status
+/voicevox-tts on
+/voicevox-tts off
+/voicevox-tts reload
+/voicevox-tts test 読み上げテスト
+```
+
+The local `.pi/voicevox-tts.json` file is ignored by Git because it contains machine-specific paths.
+
 ## Testing
 
 Unit tests that do not require real VOICEVOX assets can be run with:

@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "projectDir": "/absolute/path/to/voicevox_moonbit",
+  "core": "/absolute/path/to/libvoicevox_core.so",
+  "onnxruntime": "/absolute/path/to/libonnxruntime.so",
+  "dict": "/absolute/path/to/open_jtalk_dic_utf_8-1.11",
+  "model": "/absolute/path/to/model.vvm",
+  "styleId": 0,
+  "maxChars": 500,
+  "stripCodeBlocks": true,
+  "playerCommands": [
+    ["paplay"],
+    ["ffplay", "-autoexit", "-nodisp"]
+  ]
+}
