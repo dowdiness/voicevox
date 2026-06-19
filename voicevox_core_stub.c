@@ -144,8 +144,16 @@ static void vv_model_finalize(void *p) { VVModel *x = (VVModel *)p; if (x->ptr &
 static void vv_synth_finalize(void *p) { VVSynth *x = (VVSynth *)p; if (x->ptr && x->delete_fn) x->delete_fn(x->ptr); }
 static void vv_ort_finalize(void *p) { (void)p; }
 
+static moonbit_bytes_t vv_empty_bytes(void) {
+  return moonbit_make_bytes(0, 0);
+}
+
+static int vv_bytes_len_supported(size_t len) {
+  return len <= (size_t)INT32_MAX;
+}
+
 static moonbit_bytes_t vv_bytes_from_buf(const uint8_t *buf, size_t len) {
-  if (len > INT32_MAX) len = INT32_MAX;
+  if (!vv_bytes_len_supported(len)) return vv_empty_bytes();
   moonbit_bytes_t out = moonbit_make_bytes((int32_t)len, 0);
   if (len > 0 && buf) memcpy(out, buf, len);
   return out;
@@ -156,10 +164,20 @@ static moonbit_bytes_t vv_bytes_from_cstr(const char *s) {
   return vv_bytes_from_buf((const uint8_t *)s, strlen(s));
 }
 
-static moonbit_bytes_t vv_bytes_from_json(char *s, fn_json_free free_fn) {
-  moonbit_bytes_t out = vv_bytes_from_cstr(s);
+static moonbit_bytes_t vv_bytes_from_json(char *s, fn_json_free free_fn, int32_t *status) {
+  size_t len = s ? strlen(s) : 0;
+  if (!vv_bytes_len_supported(len) && status) *status = -1;
+  moonbit_bytes_t out = vv_bytes_from_buf((const uint8_t *)(s ? s : ""), len);
   if (s && free_fn) free_fn(s);
   return out;
+}
+
+static moonbit_bytes_t vv_bytes_from_wav(VVSynth *s, const uint8_t *buf, uintptr_t len) {
+  if (len > (uintptr_t)INT32_MAX) {
+    if (s) s->status = -1;
+    return vv_empty_bytes();
+  }
+  return vv_bytes_from_buf(buf, (size_t)len);
 }
 
 static const char *vv_optional_cstr(moonbit_bytes_t bytes) {
@@ -342,7 +360,7 @@ MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_onnxruntime_supported_device
   char *json = NULL;
   if (!o || !o->ptr || !o->supported_devices) { if (o) o->status = -1; return vv_bytes_from_cstr(""); }
   o->status = o->supported_devices(o->ptr, &json);
-  return vv_bytes_from_json(json, o->json_free);
+  return vv_bytes_from_json(json, o->json_free, &o->status);
 }
 
 MOONBIT_FFI_EXPORT
@@ -364,7 +382,7 @@ MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_open_jtalk_analyze(VVOpenJta
   char *json = NULL;
   if (!j || !j->ptr || !j->analyze) { if (j) j->status = -1; return vv_bytes_from_cstr(""); }
   j->status = j->analyze(j->ptr, (const char *)text, &json);
-  return vv_bytes_from_json(json, j->json_free);
+  return vv_bytes_from_json(json, j->json_free, &j->status);
 }
 
 MOONBIT_FFI_EXPORT
@@ -394,7 +412,7 @@ MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_voice_model_metas_json(VVMod
   if (!m || !m->ptr || !m->metas_fn) { if (m) m->status = -1; return vv_bytes_from_cstr(""); }
   char *json = m->metas_fn(m->ptr);
   m->status = json ? 0 : -1;
-  return vv_bytes_from_json(json, m->json_free);
+  return vv_bytes_from_json(json, m->json_free, &m->status);
 }
 
 MOONBIT_FFI_EXPORT
@@ -446,14 +464,14 @@ MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_synthesizer_metas_json(VVSyn
   if (!s || !s->ptr || !s->metas) { if (s) s->status = -1; return vv_bytes_from_cstr(""); }
   char *json = s->metas(s->ptr);
   s->status = json ? 0 : -1;
-  return vv_bytes_from_json(json, s->json_free);
+  return vv_bytes_from_json(json, s->json_free, &s->status);
 }
 
 static moonbit_bytes_t vv_synth_json_call(VVSynth *s, fn_synth_json_style f, moonbit_bytes_t text, uint32_t style_id) {
   char *json = NULL;
   if (!s || !s->ptr || !f) { if (s) s->status = -1; return vv_bytes_from_cstr(""); }
   s->status = f(s->ptr, (const char *)text, style_id, &json);
-  return vv_bytes_from_json(json, s->json_free);
+  return vv_bytes_from_json(json, s->json_free, &s->status);
 }
 MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_synthesizer_create_audio_query(VVSynth *s, moonbit_bytes_t text, uint32_t style_id) { return vv_synth_json_call(s, s ? s->create_audio_query : NULL, text, style_id); }
 MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_synthesizer_create_audio_query_from_kana(VVSynth *s, moonbit_bytes_t kana, uint32_t style_id) { return vv_synth_json_call(s, s ? s->create_audio_query_from_kana : NULL, kana, style_id); }
@@ -464,7 +482,7 @@ static moonbit_bytes_t vv_synth_replace_call(VVSynth *s, fn_synth_replace f, moo
   char *json = NULL;
   if (!s || !s->ptr || !f) { if (s) s->status = -1; return vv_bytes_from_cstr(""); }
   s->status = f(s->ptr, (const char *)json_in, style_id, &json);
-  return vv_bytes_from_json(json, s->json_free);
+  return vv_bytes_from_json(json, s->json_free, &s->status);
 }
 MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_synthesizer_replace_mora_data(VVSynth *s, moonbit_bytes_t accent_json, uint32_t style_id) { return vv_synth_replace_call(s, s ? s->replace_mora_data : NULL, accent_json, style_id); }
 MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_synthesizer_replace_phoneme_length(VVSynth *s, moonbit_bytes_t accent_json, uint32_t style_id) { return vv_synth_replace_call(s, s ? s->replace_phoneme_length : NULL, accent_json, style_id); }
@@ -475,7 +493,7 @@ MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_synthesizer_synthesis(VVSynt
   if (!s || !s->ptr || !s->synthesis) { if (s) s->status = -1; return vv_bytes_from_cstr(""); }
   VoicevoxSynthesisOptions opt = { enable_interrogative_upspeak != 0 };
   s->status = s->synthesis(s->ptr, (const char *)audio_query_json, style_id, opt, &len, &wav);
-  moonbit_bytes_t out = s->status == 0 ? vv_bytes_from_buf(wav, len) : vv_bytes_from_cstr("");
+  moonbit_bytes_t out = s->status == 0 ? vv_bytes_from_wav(s, wav, len) : vv_empty_bytes();
   if (wav && s->wav_free) s->wav_free(wav);
   return out;
 }
@@ -484,7 +502,7 @@ MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_synthesizer_tts(VVSynth *s, 
   if (!s || !s->ptr || !s->tts) { if (s) s->status = -1; return vv_bytes_from_cstr(""); }
   VoicevoxTtsOptions opt = { enable_interrogative_upspeak != 0 };
   s->status = s->tts(s->ptr, (const char *)text, style_id, opt, &len, &wav);
-  moonbit_bytes_t out = s->status == 0 ? vv_bytes_from_buf(wav, len) : vv_bytes_from_cstr("");
+  moonbit_bytes_t out = s->status == 0 ? vv_bytes_from_wav(s, wav, len) : vv_empty_bytes();
   if (wav && s->wav_free) s->wav_free(wav);
   return out;
 }
@@ -493,7 +511,7 @@ MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_synthesizer_tts_from_kana(VV
   if (!s || !s->ptr || !s->tts_from_kana) { if (s) s->status = -1; return vv_bytes_from_cstr(""); }
   VoicevoxTtsOptions opt = { enable_interrogative_upspeak != 0 };
   s->status = s->tts_from_kana(s->ptr, (const char *)kana, style_id, opt, &len, &wav);
-  moonbit_bytes_t out = s->status == 0 ? vv_bytes_from_buf(wav, len) : vv_bytes_from_cstr("");
+  moonbit_bytes_t out = s->status == 0 ? vv_bytes_from_wav(s, wav, len) : vv_empty_bytes();
   if (wav && s->wav_free) s->wav_free(wav);
   return out;
 }
@@ -512,5 +530,5 @@ MOONBIT_FFI_EXPORT moonbit_bytes_t moonbit_voicevox_audio_query_create_from_acce
     return vv_bytes_from_cstr("");
   }
   c->last_status = c->audio_query_from_accent_phrases((const char *)accent_json, &json);
-  return vv_bytes_from_json(json, c->json_free);
+  return vv_bytes_from_json(json, c->json_free, &c->last_status);
 }
