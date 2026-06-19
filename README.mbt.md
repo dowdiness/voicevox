@@ -2,11 +2,36 @@
 
 MoonBit native FFI bindings for [VOICEVOX Core](https://github.com/VOICEVOX/voicevox_core).
 
-This is a native-target package. It loads `libvoicevox_core` dynamically at runtime, so building the MoonBit package does not require VOICEVOX Core headers or libraries. Runtime use still requires the VOICEVOX Core shared library, ONNX Runtime, an OpenJTalk dictionary, and `.vvm` voice model files.
+This package targets MoonBit's `native` backend. It loads `libvoicevox_core` dynamically at runtime, so building the MoonBit package does not require VOICEVOX Core headers or link-time libraries. Running synthesis still requires the VOICEVOX Core shared library, ONNX Runtime, an OpenJTalk dictionary, and `.vvm` voice model files.
+
+## Requirements
+
+- MoonBit toolchain
+- VOICEVOX Core shared library, for example `libvoicevox_core.so`, `.dylib`, or `.dll`
+- ONNX Runtime shared library compatible with the VOICEVOX Core build
+- OpenJTalk dictionary directory
+- VOICEVOX `.vvm` voice model file
+
+If your `libvoicevox_core` does not export `voicevox_onnxruntime_load_once`, rebuild or download a VOICEVOX Core C API build with dynamic ONNX Runtime loading enabled.
+
+## Import
+
+Use an import alias if you want the shorter `@voicevox` package qualifier:
+
+```moonbit nocheck
+import {
+  "dowdiness/voicevox_moonbit" @voicevox,
+}
+```
 
 ## Library example
 
 ```mbt nocheck
+///|
+import {
+  "dowdiness/voicevox_moonbit" @voicevox,
+}
+
 ///|
 fn synthesize() -> Unit raise {
   let core = @voicevox.Core::load("./libvoicevox_core.so")
@@ -35,7 +60,7 @@ let synth = @voicevox.Synthesizer::new(core, ort, open_jtalk, options~)
 
 ## CLI smoke test
 
-`cmd/synthesize` uses `moonbitlang/core/argparse` and `@voicevox.write_wav_file` to write the synthesized WAV to disk:
+The repository includes a small CLI in `cmd/synthesize`. It uses `moonbitlang/core/argparse` and `@voicevox.write_wav_file` to synthesize speech and write a WAV file:
 
 ```sh
 moon run --target native cmd/synthesize -- \
@@ -48,52 +73,21 @@ moon run --target native cmd/synthesize -- \
   --out out.wav
 ```
 
-Run `moon run --target native cmd/synthesize -- --help` to see all options.
-
-### WSL/Linux local smoke command
-
-In the development environment used for this repository, Linux `voicevox_core` artifacts are available from a sibling checkout of `VOICEVOX/voicevox_core`, and Windows-installed VOICEVOX model/dictionary files can be copied under `_build/voicevox-local/`.
-
-A known-good command is:
+Run the CLI help for the full option list:
 
 ```sh
-moon run --target native cmd/synthesize -- \
-  --core /home/antisatori/ghq/github.com/VOICEVOX/voicevox_core/target/debug/libvoicevox_core.so \
-  --onnxruntime /home/antisatori/ghq/github.com/VOICEVOX/voicevox_core/target/debug/libonnxruntime.so \
-  --dict /home/antisatori/ghq/github.com/VOICEVOX/voicevox_core/crates/test_util/data/open_jtalk_dic_utf_8-1.11 \
-  --model /home/antisatori/ghq/github.com/VOICEVOX/voicevox_core/crates/test_util/data/model/sample.vvm \
-  --style-id 0 \
-  --text 'こんにちは' \
-  --out _build/voicevox_cli_smoke.wav
+moon run --target native cmd/synthesize -- --help
 ```
 
-If `voicevox_onnxruntime_load_once` is missing from `libvoicevox_core.so`, rebuild the C API with dynamic ONNX Runtime loading:
+## Testing
+
+Unit tests that do not require real VOICEVOX assets can be run with:
 
 ```sh
-cd /home/antisatori/ghq/github.com/VOICEVOX/voicevox_core
-cargo build -p voicevox_core_c_api --features load-onnxruntime
+moon test --target native
 ```
 
-### Playing the generated WAV
-
-On WSL/Linux, any of these can play the generated file if installed:
-
-```sh
-paplay _build/voicevox_cli_smoke.wav
-ffplay -autoexit -nodisp _build/voicevox_cli_smoke.wav
-aplay _build/voicevox_cli_smoke.wav
-mpv _build/voicevox_cli_smoke.wav
-```
-
-On WSL2, you can also open the WAV with the Windows default player:
-
-```sh
-explorer.exe "$(wslpath -w _build/voicevox_cli_smoke.wav)"
-```
-
-## Integration test
-
-The real VOICEVOX smoke test is enabled only when all required environment variables are set:
+The real synthesis smoke test is skipped unless all required environment variables are set:
 
 ```sh
 VOICEVOX_CORE_LIB=./libvoicevox_core.so \
@@ -104,4 +98,10 @@ VOICEVOX_STYLE_ID=3 \
 moon test --target native
 ```
 
-When enabled, the test synthesizes `こんにちは`, checks for a RIFF/WAVE header, and writes `_build/voicevox_smoke.wav`.
+When enabled, the integration test synthesizes `こんにちは`, checks for a RIFF/WAVE header, and writes `_build/voicevox_smoke.wav`.
+
+## Notes
+
+- The public API is intentionally close to the VOICEVOX Core C API.
+- JSON-returning VOICEVOX Core functions currently return JSON as `String`; callers can decode it with their preferred JSON package.
+- Generated WAV bytes are returned as `Bytes`. Use `write_wav_file` or your own file I/O to persist them.

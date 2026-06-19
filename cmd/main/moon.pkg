@@ -1,7 +1,0 @@
-// import {
-//   "dowdiness/voicevox_moonbit" @lib,
-// }
-
-options(
-  "is-main": true,
-)
