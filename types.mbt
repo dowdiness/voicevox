@@ -40,13 +40,19 @@ pub struct InitializeOptions {
 pub fn InitializeOptions::InitializeOptions(
   acceleration_mode? : AccelerationMode = Auto,
   cpu_num_threads? : Int = 0,
-) -> InitializeOptions {
+) -> InitializeOptions raise VoicevoxError {
+  validate_cpu_num_threads(cpu_num_threads)
   { acceleration_mode, cpu_num_threads }
 }
 
 ///|
 pub fn InitializeOptions::default() -> InitializeOptions {
-  InitializeOptions()
+  { acceleration_mode: Auto, cpu_num_threads: 0 }
+}
+
+///|
+fn validate_cpu_num_threads(value : Int) -> Unit raise VoicevoxError {
+  guard value >= 0 && value <= 65535 else { raise InvalidCpuNumThreads(value) }
 }
 
 ///|
@@ -108,5 +114,6 @@ pub(all) suberror VoicevoxError {
   LibraryLoadError(String)
   ApiError(code~ : Int, message~ : String)
   InvalidVoiceModelIdLength(Int)
+  InvalidCpuNumThreads(Int)
   WriteFileError(String)
 } derive(Debug, Eq)

@@ -321,10 +321,10 @@ VVOrt *moonbit_voicevox_onnxruntime_load_once(VVCore *c, moonbit_bytes_t filenam
   o->error_message = c->error_message;
   o->supported_devices = c->ort_supported_devices;
   o->json_free = c->json_free;
-  if (c->ort_load_once) {
+  const char *custom = vv_optional_cstr(filename);
+  if (c->ort_load_once && (custom || c->default_load_ort)) {
     VoicevoxLoadOnnxruntimeOptions opt;
-    if (c->default_load_ort) opt = c->default_load_ort(); else opt.filename = NULL;
-    const char *custom = vv_optional_cstr(filename);
+    if (c->default_load_ort) opt = c->default_load_ort(); else opt.filename = custom;
     if (custom) opt.filename = custom;
     o->status = c->ort_load_once(opt, &o->ptr);
   } else if (c->ort_init_once) {

@@ -9,6 +9,7 @@ pub fn Synthesizer::Synthesizer(
     Some(options) => options
     None => InitializeOptions::default()
   }
+  validate_cpu_num_threads(opts.cpu_num_threads)
   let handle = ffi_synthesizer_new(
     core.handle,
     onnxruntime.handle,

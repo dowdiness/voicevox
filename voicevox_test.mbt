@@ -47,6 +47,22 @@ test "option constructors are available without public record construction" {
 }
 
 ///|
+test "InitializeOptions rejects invalid cpu_num_threads" {
+  try @voicevox_moonbit.InitializeOptions(cpu_num_threads=-1) catch {
+    InvalidCpuNumThreads(-1) => ()
+    _ => fail("expected InvalidCpuNumThreads")
+  } noraise {
+    _ => fail("expected invalid cpu_num_threads")
+  }
+  try @voicevox_moonbit.InitializeOptions(cpu_num_threads=65536) catch {
+    InvalidCpuNumThreads(65536) => ()
+    _ => fail("expected InvalidCpuNumThreads")
+  } noraise {
+    _ => fail("expected invalid cpu_num_threads")
+  }
+}
+
+///|
 test "write_wav_file writes bytes" {
   let result : Result[Unit, @voicevox_moonbit.VoicevoxError] = try {
     @voicevox_moonbit.write_wav_file(
