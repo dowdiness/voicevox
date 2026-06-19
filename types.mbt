@@ -31,9 +31,9 @@ fn OnExistingVoiceModelId::to_int(self : OnExistingVoiceModelId) -> Int {
 }
 
 ///|
-pub struct InitializeOptions {
-  acceleration_mode : AccelerationMode
-  cpu_num_threads : Int
+pub(all) struct InitializeOptions {
+  priv acceleration_mode : AccelerationMode
+  priv cpu_num_threads : Int
 } derive(Debug, Eq)
 
 ///|
@@ -51,13 +51,25 @@ pub fn InitializeOptions::default() -> InitializeOptions {
 }
 
 ///|
+pub fn InitializeOptions::acceleration_mode(
+  self : InitializeOptions,
+) -> AccelerationMode {
+  self.acceleration_mode
+}
+
+///|
+pub fn InitializeOptions::cpu_num_threads(self : InitializeOptions) -> Int {
+  self.cpu_num_threads
+}
+
+///|
 fn validate_cpu_num_threads(value : Int) -> Unit raise VoicevoxError {
   guard value >= 0 && value <= 65535 else { raise InvalidCpuNumThreads(value) }
 }
 
 ///|
-pub struct LoadVoiceModelOptions {
-  on_existing : OnExistingVoiceModelId
+pub(all) struct LoadVoiceModelOptions {
+  priv on_existing : OnExistingVoiceModelId
 } derive(Debug, Eq)
 
 ///|
@@ -73,8 +85,15 @@ pub fn LoadVoiceModelOptions::default() -> LoadVoiceModelOptions {
 }
 
 ///|
-pub struct SynthesisOptions {
-  enable_interrogative_upspeak : Bool
+pub fn LoadVoiceModelOptions::on_existing(
+  self : LoadVoiceModelOptions,
+) -> OnExistingVoiceModelId {
+  self.on_existing
+}
+
+///|
+pub(all) struct SynthesisOptions {
+  priv enable_interrogative_upspeak : Bool
 } derive(Debug, Eq)
 
 ///|
@@ -90,8 +109,15 @@ pub fn SynthesisOptions::default() -> SynthesisOptions {
 }
 
 ///|
-pub struct TtsOptions {
-  enable_interrogative_upspeak : Bool
+pub fn SynthesisOptions::enable_interrogative_upspeak(
+  self : SynthesisOptions,
+) -> Bool {
+  self.enable_interrogative_upspeak
+}
+
+///|
+pub(all) struct TtsOptions {
+  priv enable_interrogative_upspeak : Bool
 } derive(Debug, Eq)
 
 ///|
@@ -104,6 +130,11 @@ pub fn TtsOptions::TtsOptions(
 ///|
 pub fn TtsOptions::default() -> TtsOptions {
   TtsOptions()
+}
+
+///|
+pub fn TtsOptions::enable_interrogative_upspeak(self : TtsOptions) -> Bool {
+  self.enable_interrogative_upspeak
 }
 
 ///|

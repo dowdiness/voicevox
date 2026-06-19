@@ -30,20 +30,21 @@ test "Core::load reports missing dynamic library" {
 }
 
 ///|
-test "option constructors are available without public record construction" {
+test "option constructors and accessors are available" {
   let init = @voicevox_moonbit.InitializeOptions(
     acceleration_mode=Gpu,
     cpu_num_threads=2,
   )
-  assert_eq(init.cpu_num_threads, 2)
+  assert_true(init.acceleration_mode() is Gpu)
+  assert_eq(init.cpu_num_threads(), 2)
   let load = @voicevox_moonbit.LoadVoiceModelOptions(on_existing=Reload)
-  assert_true(load.on_existing is Reload)
+  assert_true(load.on_existing() is Reload)
   let synthesis = @voicevox_moonbit.SynthesisOptions(
     enable_interrogative_upspeak=false,
   )
-  assert_eq(synthesis.enable_interrogative_upspeak, false)
+  assert_eq(synthesis.enable_interrogative_upspeak(), false)
   let tts = @voicevox_moonbit.TtsOptions(enable_interrogative_upspeak=false)
-  assert_eq(tts.enable_interrogative_upspeak, false)
+  assert_eq(tts.enable_interrogative_upspeak(), false)
 }
 
 ///|

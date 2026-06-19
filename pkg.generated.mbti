@@ -43,18 +43,20 @@ pub fn Core::validate_score(Self, String) -> Unit raise VoicevoxError
 
 type CoreHandle
 
-pub struct InitializeOptions {
-  acceleration_mode : AccelerationMode
-  cpu_num_threads : Int
+pub(all) struct InitializeOptions {
+  // private fields
 } derive(Eq, @debug.Debug)
 pub fn InitializeOptions::InitializeOptions(acceleration_mode? : AccelerationMode, cpu_num_threads? : Int) -> Self raise VoicevoxError
+pub fn InitializeOptions::acceleration_mode(Self) -> AccelerationMode
+pub fn InitializeOptions::cpu_num_threads(Self) -> Int
 pub fn InitializeOptions::default() -> Self
 
-pub struct LoadVoiceModelOptions {
-  on_existing : OnExistingVoiceModelId
+pub(all) struct LoadVoiceModelOptions {
+  // private fields
 } derive(Eq, @debug.Debug)
 pub fn LoadVoiceModelOptions::LoadVoiceModelOptions(on_existing? : OnExistingVoiceModelId) -> Self
 pub fn LoadVoiceModelOptions::default() -> Self
+pub fn LoadVoiceModelOptions::on_existing(Self) -> OnExistingVoiceModelId
 
 pub(all) enum OnExistingVoiceModelId {
   ExistingError
@@ -77,11 +79,12 @@ pub fn OpenJtalk::analyze(Self, String) -> String raise VoicevoxError
 
 type OpenJtalkHandle
 
-pub struct SynthesisOptions {
-  enable_interrogative_upspeak : Bool
+pub(all) struct SynthesisOptions {
+  // private fields
 } derive(Eq, @debug.Debug)
 pub fn SynthesisOptions::SynthesisOptions(enable_interrogative_upspeak? : Bool) -> Self
 pub fn SynthesisOptions::default() -> Self
+pub fn SynthesisOptions::enable_interrogative_upspeak(Self) -> Bool
 
 pub(all) struct Synthesizer {
   // private fields
@@ -105,11 +108,12 @@ pub fn Synthesizer::unload_voice_model(Self, VoiceModelId) -> Unit raise Voicevo
 
 type SynthesizerHandle
 
-pub struct TtsOptions {
-  enable_interrogative_upspeak : Bool
+pub(all) struct TtsOptions {
+  // private fields
 } derive(Eq, @debug.Debug)
 pub fn TtsOptions::TtsOptions(enable_interrogative_upspeak? : Bool) -> Self
 pub fn TtsOptions::default() -> Self
+pub fn TtsOptions::enable_interrogative_upspeak(Self) -> Bool
 
 pub(all) struct VoiceModelFile {
   // private fields
