@@ -1,14 +1,39 @@
 ///|
-pub type Core
+type CoreHandle
 
 ///|
-pub type Onnxruntime
+type OnnxruntimeHandle
 
 ///|
-pub type OpenJtalk
+type OpenJtalkHandle
 
 ///|
-pub type VoiceModelFile
+type VoiceModelFileHandle
 
 ///|
-pub type Synthesizer
+type SynthesizerHandle
+
+///|
+pub(all) struct Core {
+  priv handle : CoreHandle
+}
+
+///|
+pub(all) struct Onnxruntime {
+  priv handle : OnnxruntimeHandle
+}
+
+///|
+pub(all) struct OpenJtalk {
+  priv handle : OpenJtalkHandle
+}
+
+///|
+pub(all) struct VoiceModelFile {
+  priv handle : VoiceModelFileHandle
+}
+
+///|
+pub(all) struct Synthesizer {
+  priv handle : SynthesizerHandle
+}

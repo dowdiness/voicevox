@@ -37,7 +37,7 @@ pub struct InitializeOptions {
 } derive(Debug, Eq)
 
 ///|
-pub fn InitializeOptions::new(
+pub fn InitializeOptions::InitializeOptions(
   acceleration_mode? : AccelerationMode = Auto,
   cpu_num_threads? : Int = 0,
 ) -> InitializeOptions {
@@ -46,7 +46,7 @@ pub fn InitializeOptions::new(
 
 ///|
 pub fn InitializeOptions::default() -> InitializeOptions {
-  InitializeOptions::new()
+  InitializeOptions()
 }
 
 ///|
@@ -55,7 +55,7 @@ pub struct LoadVoiceModelOptions {
 } derive(Debug, Eq)
 
 ///|
-pub fn LoadVoiceModelOptions::new(
+pub fn LoadVoiceModelOptions::LoadVoiceModelOptions(
   on_existing? : OnExistingVoiceModelId = ExistingError,
 ) -> LoadVoiceModelOptions {
   { on_existing, }
@@ -63,7 +63,7 @@ pub fn LoadVoiceModelOptions::new(
 
 ///|
 pub fn LoadVoiceModelOptions::default() -> LoadVoiceModelOptions {
-  LoadVoiceModelOptions::new()
+  LoadVoiceModelOptions()
 }
 
 ///|
@@ -72,7 +72,7 @@ pub struct SynthesisOptions {
 } derive(Debug, Eq)
 
 ///|
-pub fn SynthesisOptions::new(
+pub fn SynthesisOptions::SynthesisOptions(
   enable_interrogative_upspeak? : Bool = true,
 ) -> SynthesisOptions {
   { enable_interrogative_upspeak, }
@@ -80,7 +80,7 @@ pub fn SynthesisOptions::new(
 
 ///|
 pub fn SynthesisOptions::default() -> SynthesisOptions {
-  SynthesisOptions::new()
+  SynthesisOptions()
 }
 
 ///|
@@ -89,7 +89,7 @@ pub struct TtsOptions {
 } derive(Debug, Eq)
 
 ///|
-pub fn TtsOptions::new(
+pub fn TtsOptions::TtsOptions(
   enable_interrogative_upspeak? : Bool = true,
 ) -> TtsOptions {
   { enable_interrogative_upspeak, }
@@ -97,7 +97,7 @@ pub fn TtsOptions::new(
 
 ///|
 pub fn TtsOptions::default() -> TtsOptions {
-  TtsOptions::new()
+  TtsOptions()
 }
 
 ///|

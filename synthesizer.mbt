@@ -1,5 +1,5 @@
 ///|
-pub fn Synthesizer::new(
+pub fn Synthesizer::Synthesizer(
   core : Core,
   onnxruntime : Onnxruntime,
   open_jtalk : OpenJtalk,
@@ -9,15 +9,15 @@ pub fn Synthesizer::new(
     Some(options) => options
     None => InitializeOptions::default()
   }
-  let synthesizer = ffi_synthesizer_new(
-    core,
-    onnxruntime,
-    open_jtalk,
+  let handle = ffi_synthesizer_new(
+    core.handle,
+    onnxruntime.handle,
+    open_jtalk.handle,
     opts.acceleration_mode.to_int(),
     opts.cpu_num_threads,
   )
-  check_synthesizer(synthesizer, ffi_synthesizer_status(synthesizer))
-  synthesizer
+  check_synthesizer(handle, ffi_synthesizer_status(handle))
+  { handle, }
 }
 
 ///|
@@ -31,8 +31,12 @@ pub fn Synthesizer::load_voice_model(
     None => LoadVoiceModelOptions::default()
   }
   check_synthesizer(
-    self,
-    ffi_synthesizer_load_voice_model(self, model, opts.on_existing.to_int()),
+    self.handle,
+    ffi_synthesizer_load_voice_model(
+      self.handle,
+      model.handle,
+      opts.on_existing.to_int(),
+    ),
   )
 }
 
@@ -42,14 +46,14 @@ pub fn Synthesizer::unload_voice_model(
   model_id : VoiceModelId,
 ) -> Unit raise VoicevoxError {
   check_synthesizer(
-    self,
-    ffi_synthesizer_unload_voice_model(self, model_id.to_bytes()),
+    self.handle,
+    ffi_synthesizer_unload_voice_model(self.handle, model_id.to_bytes()),
   )
 }
 
 ///|
 pub fn Synthesizer::is_gpu_mode(self : Synthesizer) -> Bool {
-  ffi_synthesizer_is_gpu_mode(self)
+  ffi_synthesizer_is_gpu_mode(self.handle)
 }
 
 ///|
@@ -57,15 +61,15 @@ pub fn Synthesizer::is_loaded_voice_model(
   self : Synthesizer,
   model_id : VoiceModelId,
 ) -> Bool {
-  ffi_synthesizer_is_loaded_voice_model(self, model_id.to_bytes())
+  ffi_synthesizer_is_loaded_voice_model(self.handle, model_id.to_bytes())
 }
 
 ///|
 pub fn Synthesizer::metas_json(
   self : Synthesizer,
 ) -> String raise VoicevoxError {
-  let json = ffi_synthesizer_metas_json(self)
-  check_synthesizer(self, ffi_synthesizer_status(self))
+  let json = ffi_synthesizer_metas_json(self.handle)
+  check_synthesizer(self.handle, ffi_synthesizer_status(self.handle))
   decode_utf8(json)
 }
 
@@ -74,10 +78,10 @@ fn Synthesizer::synth_json(
   self : Synthesizer,
   text : String,
   style_id : UInt,
-  run : (Synthesizer, Bytes, UInt) -> Bytes,
+  run : (SynthesizerHandle, Bytes, UInt) -> Bytes,
 ) -> String raise VoicevoxError {
-  let json = run(self, encode_utf8(text), style_id)
-  check_synthesizer(self, ffi_synthesizer_status(self))
+  let json = run(self.handle, encode_utf8(text), style_id)
+  check_synthesizer(self.handle, ffi_synthesizer_status(self.handle))
   decode_utf8(json)
 }
 
@@ -158,10 +162,15 @@ fn Synthesizer::synth_wav(
   text : String,
   style_id : UInt,
   enable_interrogative_upspeak : Bool,
-  run : (Synthesizer, Bytes, UInt, Bool) -> Bytes,
+  run : (SynthesizerHandle, Bytes, UInt, Bool) -> Bytes,
 ) -> Bytes raise VoicevoxError {
-  let wav = run(self, encode_utf8(text), style_id, enable_interrogative_upspeak)
-  check_synthesizer(self, ffi_synthesizer_status(self))
+  let wav = run(
+    self.handle,
+    encode_utf8(text),
+    style_id,
+    enable_interrogative_upspeak,
+  )
+  check_synthesizer(self.handle, ffi_synthesizer_status(self.handle))
   wav
 }
 

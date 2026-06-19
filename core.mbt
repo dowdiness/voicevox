@@ -1,26 +1,26 @@
 ///|
 pub fn Core::load(path : String) -> Core raise VoicevoxError {
-  let core = ffi_core_open(encode_utf8(path))
-  if ffi_core_ok(core) {
-    core
+  let handle = ffi_core_open(encode_utf8(path))
+  if ffi_core_ok(handle) {
+    { handle, }
   } else {
-    raise LibraryLoadError(decode_utf8(ffi_core_error(core)))
+    raise LibraryLoadError(decode_utf8(ffi_core_error(handle)))
   }
 }
 
 ///|
 pub fn Core::get_version(self : Core) -> String {
-  decode_utf8(ffi_core_version(self))
+  decode_utf8(ffi_core_version(self.handle))
 }
 
 ///|
 pub fn Core::onnxruntime_versioned_filename(self : Core) -> String {
-  decode_utf8(ffi_core_onnxruntime_versioned_filename(self))
+  decode_utf8(ffi_core_onnxruntime_versioned_filename(self.handle))
 }
 
 ///|
 pub fn Core::onnxruntime_unversioned_filename(self : Core) -> String {
-  decode_utf8(ffi_core_onnxruntime_unversioned_filename(self))
+  decode_utf8(ffi_core_onnxruntime_unversioned_filename(self.handle))
 }
 
 ///|
@@ -32,28 +32,28 @@ pub fn Core::load_onnxruntime(
     Some(filename) => encode_utf8(filename)
     None => b""
   }
-  let onnxruntime = ffi_onnxruntime_load_once(self, filename_bytes)
-  check_onnxruntime(onnxruntime, ffi_onnxruntime_status(onnxruntime))
-  onnxruntime
+  let handle = ffi_onnxruntime_load_once(self.handle, filename_bytes)
+  check_onnxruntime(handle, ffi_onnxruntime_status(handle))
+  { handle, }
 }
 
 ///|
 pub fn Onnxruntime::supported_devices_json(
   self : Onnxruntime,
 ) -> String raise VoicevoxError {
-  let json = ffi_onnxruntime_supported_devices_json(self)
-  check_onnxruntime(self, ffi_onnxruntime_status(self))
+  let json = ffi_onnxruntime_supported_devices_json(self.handle)
+  check_onnxruntime(self.handle, ffi_onnxruntime_status(self.handle))
   decode_utf8(json)
 }
 
 ///|
-pub fn OpenJtalk::new(
+pub fn OpenJtalk::OpenJtalk(
   core : Core,
   dict_dir : String,
 ) -> OpenJtalk raise VoicevoxError {
-  let open_jtalk = ffi_open_jtalk_new(core, encode_utf8(dict_dir))
-  check_open_jtalk(open_jtalk, ffi_open_jtalk_status(open_jtalk))
-  open_jtalk
+  let handle = ffi_open_jtalk_new(core.handle, encode_utf8(dict_dir))
+  check_open_jtalk(handle, ffi_open_jtalk_status(handle))
+  { handle, }
 }
 
 ///|
@@ -61,8 +61,8 @@ pub fn OpenJtalk::analyze(
   self : OpenJtalk,
   text : String,
 ) -> String raise VoicevoxError {
-  let json = ffi_open_jtalk_analyze(self, encode_utf8(text))
-  check_open_jtalk(self, ffi_open_jtalk_status(self))
+  let json = ffi_open_jtalk_analyze(self.handle, encode_utf8(text))
+  check_open_jtalk(self.handle, ffi_open_jtalk_status(self.handle))
   decode_utf8(json)
 }
 
@@ -70,9 +70,9 @@ pub fn OpenJtalk::analyze(
 fn validate_json(
   core : Core,
   json : String,
-  run : (Core, Bytes) -> Int,
+  run : (CoreHandle, Bytes) -> Int,
 ) -> Unit raise VoicevoxError {
-  check_core(core, run(core, encode_utf8(json)))
+  check_core(core.handle, run(core.handle, encode_utf8(json)))
 }
 
 ///|
@@ -137,9 +137,9 @@ pub fn Core::audio_query_from_accent_phrases(
   accent_phrases_json : String,
 ) -> String raise VoicevoxError {
   let json = ffi_audio_query_create_from_accent_phrases(
-    self,
+    self.handle,
     encode_utf8(accent_phrases_json),
   )
-  check_core(self, ffi_core_status(self))
+  check_core(self.handle, ffi_core_status(self.handle))
   decode_utf8(json)
 }

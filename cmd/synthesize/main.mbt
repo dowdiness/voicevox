@@ -9,47 +9,47 @@ suberror CliError {
 
 ///|
 fn command() -> @argparse.Command {
-  @argparse.Command::new(
+  @argparse.Command(
     "voicevox-synthesize",
     about="Synthesize speech with VOICEVOX Core and write a WAV file.",
     options=[
-      @argparse.OptionArg::new(
+      @argparse.OptionArg(
         "core",
         long="core",
         required=true,
         about="Path to libvoicevox_core (.so/.dylib/.dll)",
       ),
-      @argparse.OptionArg::new(
+      @argparse.OptionArg(
         "onnxruntime",
         long="onnxruntime",
         required=true,
         about="Path to ONNX Runtime library used by VOICEVOX Core",
       ),
-      @argparse.OptionArg::new(
+      @argparse.OptionArg(
         "dict",
         long="dict",
         required=true,
         about="Path to open_jtalk_dic_utf_8 directory",
       ),
-      @argparse.OptionArg::new(
+      @argparse.OptionArg(
         "model",
         long="model",
         required=true,
         about="Path to a .vvm voice model",
       ),
-      @argparse.OptionArg::new(
+      @argparse.OptionArg(
         "style-id",
         long="style-id",
         required=true,
         about="VOICEVOX style ID, for example 3",
       ),
-      @argparse.OptionArg::new(
+      @argparse.OptionArg(
         "text",
         long="text",
         required=true,
         about="Text to synthesize",
       ),
-      @argparse.OptionArg::new(
+      @argparse.OptionArg(
         "out",
         long="out",
         required=true,
@@ -91,9 +91,9 @@ fn run() -> Unit raise {
 
   let core = @voicevox.Core::load(core_path)
   let onnxruntime = core.load_onnxruntime(filename=onnxruntime_path)
-  let open_jtalk = @voicevox.OpenJtalk::new(core, dict_dir)
+  let open_jtalk = @voicevox.OpenJtalk(core, dict_dir)
   let model = @voicevox.VoiceModelFile::open(core, model_path)
-  let synthesizer = @voicevox.Synthesizer::new(core, onnxruntime, open_jtalk)
+  let synthesizer = @voicevox.Synthesizer(core, onnxruntime, open_jtalk)
   synthesizer.load_voice_model(model)
   let wav = synthesizer.tts(text, style_id)
   @voicevox.write_wav_file(out, wav)

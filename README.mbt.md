@@ -14,6 +14,14 @@ This package targets MoonBit's `native` backend. It loads `libvoicevox_core` dyn
 
 If your `libvoicevox_core` does not export `voicevox_onnxruntime_load_once`, rebuild or download a VOICEVOX Core C API build with dynamic ONNX Runtime loading enabled.
 
+## Compatibility
+
+- MoonBit target: `native` only.
+- CI currently runs `moon check --target native` and `moon test --target native` on GitHub Actions `ubuntu-latest` without real VOICEVOX assets.
+- The native stub contains dynamic loader paths for Linux/Unix, macOS, and Windows. Linux is the primary tested environment; macOS and Windows support should be treated as experimental until real synthesis smoke tests are added for those platforms.
+- Real synthesis has been smoke-tested on Linux with a VOICEVOX Core C API build around `0.16.4` (`0.16.4-48-gec003ed`) and ONNX Runtime loaded through `voicevox_onnxruntime_load_once`.
+- Expected VOICEVOX Core C API surface includes the current `voicevox_synthesizer_*`, `voicevox_voice_model_file_*`, `voicevox_open_jtalk_rc_*`, `voicevox_json_free`, and `voicevox_wav_free` symbols used by the bindings. Older C API builds may fail at `Core::load` with a missing-symbol error.
+
 ## Import
 
 Use an import alias if you want the shorter `@voicevox` package qualifier:
@@ -36,9 +44,9 @@ import {
 fn synthesize() -> Unit raise {
   let core = @voicevox.Core::load("./libvoicevox_core.so")
   let ort = core.load_onnxruntime(filename="./libonnxruntime.so")
-  let open_jtalk = @voicevox.OpenJtalk::new(core, "./open_jtalk_dic_utf_8-1.11")
+  let open_jtalk = @voicevox.OpenJtalk(core, "./open_jtalk_dic_utf_8-1.11")
   let model = @voicevox.VoiceModelFile::open(core, "./model.vvm")
-  let synth = @voicevox.Synthesizer::new(core, ort, open_jtalk)
+  let synth = @voicevox.Synthesizer(core, ort, open_jtalk)
   synth.load_voice_model(model)
   let wav = synth.tts("こんにちは", 3)
   @voicevox.write_wav_file("out.wav", wav)
@@ -49,13 +57,13 @@ Use option constructors when overriding defaults:
 
 ```mbt nocheck
 ///|
-let options = @voicevox.InitializeOptions::new(
+let options = @voicevox.InitializeOptions(
   acceleration_mode=Gpu,
   cpu_num_threads=2,
 )
 
 ///|
-let synth = @voicevox.Synthesizer::new(core, ort, open_jtalk, options~)
+let synth = @voicevox.Synthesizer(core, ort, open_jtalk, options~)
 ```
 
 ## CLI smoke test

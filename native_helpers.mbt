@@ -9,7 +9,7 @@ fn encode_utf8(text : String) -> Bytes {
 }
 
 ///|
-fn check_core(core : Core, code : Int) -> Unit raise VoicevoxError {
+fn check_core(core : CoreHandle, code : Int) -> Unit raise VoicevoxError {
   if code != 0 {
     raise ApiError(
       code~,
@@ -20,7 +20,7 @@ fn check_core(core : Core, code : Int) -> Unit raise VoicevoxError {
 
 ///|
 fn check_onnxruntime(
-  onnxruntime : Onnxruntime,
+  onnxruntime : OnnxruntimeHandle,
   code : Int,
 ) -> Unit raise VoicevoxError {
   if code != 0 {
@@ -33,7 +33,7 @@ fn check_onnxruntime(
 
 ///|
 fn check_open_jtalk(
-  open_jtalk : OpenJtalk,
+  open_jtalk : OpenJtalkHandle,
   code : Int,
 ) -> Unit raise VoicevoxError {
   if code != 0 {
@@ -46,7 +46,7 @@ fn check_open_jtalk(
 
 ///|
 fn check_voice_model(
-  model : VoiceModelFile,
+  model : VoiceModelFileHandle,
   code : Int,
 ) -> Unit raise VoicevoxError {
   if code != 0 {
@@ -59,7 +59,7 @@ fn check_voice_model(
 
 ///|
 fn check_synthesizer(
-  synthesizer : Synthesizer,
+  synthesizer : SynthesizerHandle,
   code : Int,
 ) -> Unit raise VoicevoxError {
   if code != 0 {
