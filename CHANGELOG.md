@@ -2,12 +2,12 @@
 
 ## v0.1.0
 
-Initial release of `dowdiness/voicevox_moonbit`.
+`dowdiness/voicevox_moonbit` の初回リリースです。
 
-This release provides MoonBit native FFI bindings for VOICEVOX Core, including dynamic loading of VOICEVOX Core and VOICEVOX ONNX Runtime, OpenJTalk initialization, `.vvm` voice model loading, text-to-speech synthesis, WAV output, and a small native CLI.
+このリリースでは、VOICEVOX Core 向けの MoonBit native FFI bindings を提供します。VOICEVOX Core と VOICEVOX ONNX Runtime の動的ロード、OpenJTalk 辞書の初期化、`.vvm` 音声モデルの読み込み、テキスト音声合成、WAV 出力、小さな native CLI を含みます。
 
-It also includes optional pi integration for reading assistant responses aloud with VOICEVOX.
+また、pi の応答を VOICEVOX で読み上げる pi extension も含みます。
 
-VOICEVOX Core binaries, VOICEVOX ONNX Runtime, OpenJTalk dictionaries, and `.vvm` voice models are not included. Use the official VOICEVOX Core Downloader and follow the applicable terms.
+VOICEVOX Core のバイナリ、VOICEVOX ONNX Runtime、OpenJTalk 辞書、`.vvm` 音声モデルはこのリポジトリには含まれていません。公式の VOICEVOX Core Downloader を使用し、適用されるライセンスと利用規約に従ってください。
 
-When using generated voices, follow the terms for each voice library and include the required credit, for example `VOICEVOX:ずんだもん` when using ずんだもん.
+生成した音声を利用する場合は、各音声ライブラリの利用規約に従い、必要なクレジット表記を行ってください。例えば、ずんだもんを利用する場合は `VOICEVOX:ずんだもん` のように表記します。
