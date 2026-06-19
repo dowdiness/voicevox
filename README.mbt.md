@@ -1,4 +1,4 @@
-# dowdiness/voicevox
+# dowdiness/voicevox_moonbit
 
 MoonBit native FFI bindings for [VOICEVOX Core](https://github.com/VOICEVOX/voicevox_core).
 

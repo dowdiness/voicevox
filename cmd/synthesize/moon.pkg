@@ -1,5 +1,5 @@
 import {
-  "dowdiness/voicevox",
+  "dowdiness/voicevox_moonbit" @voicevox,
   "moonbitlang/core/argparse",
   "moonbitlang/core/strconv",
 }

@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "dowdiness/voicevox/cmd/synthesize"
+package "dowdiness/voicevox_moonbit/cmd/synthesize"
 
 import {
   "moonbitlang/core/debug",

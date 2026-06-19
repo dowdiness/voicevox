@@ -32,15 +32,17 @@ fn run_real_synthesis_smoke(
   style_id_text : String,
 ) -> Unit raise {
   let style_id : UInt = @strconv.from_str(style_id_text)
-  let core = @voicevox.Core::load(core_path)
+  let core = @voicevox_moonbit.Core::load(core_path)
   let onnxruntime = core.load_onnxruntime(filename=onnxruntime_path)
-  let open_jtalk = @voicevox.OpenJtalk::new(core, dict_dir)
-  let model = @voicevox.VoiceModelFile::open(core, model_path)
-  let synthesizer = @voicevox.Synthesizer::new(core, onnxruntime, open_jtalk)
+  let open_jtalk = @voicevox_moonbit.OpenJtalk::new(core, dict_dir)
+  let model = @voicevox_moonbit.VoiceModelFile::open(core, model_path)
+  let synthesizer = @voicevox_moonbit.Synthesizer::new(
+    core, onnxruntime, open_jtalk,
+  )
   synthesizer.load_voice_model(model)
   let wav = synthesizer.tts("こんにちは", style_id)
   assert_wav_header(wav)
-  @voicevox.write_wav_file("_build/voicevox_smoke.wav", wav)
+  @voicevox_moonbit.write_wav_file("_build/voicevox_smoke.wav", wav)
 }
 
 ///|

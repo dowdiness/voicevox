@@ -9,13 +9,13 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "dowdiness/voicevox"
+name = "dowdiness/voicevox_moonbit"
 
 version = "0.1.0"
 
 readme = "README.mbt.md"
 
-repository = ""
+repository = "https://github.com/dowdiness/voicevox_moonbit"
 
 license = "Apache-2.0"
 
