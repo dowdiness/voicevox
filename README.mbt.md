@@ -7,14 +7,17 @@ This is a native-target package. It loads `libvoicevox_core` dynamically at runt
 ## Library example
 
 ```mbt nocheck
-let core = try! @voicevox.Core::load("./libvoicevox_core.so")
-let ort = try! core.load_onnxruntime(filename="./libonnxruntime.so")
-let open_jtalk = try! @voicevox.OpenJtalk::new(core, "./open_jtalk_dic_utf_8-1.11")
-let model = try! @voicevox.VoiceModelFile::open(core, "./model.vvm")
-let synth = try! @voicevox.Synthesizer::new(core, ort, open_jtalk)
-try! synth.load_voice_model(model)
-let wav = try! synth.tts("こんにちは", 3)
-try! @voicevox.write_wav_file("out.wav", wav)
+///|
+fn synthesize() -> Unit raise {
+  let core = @voicevox.Core::load("./libvoicevox_core.so")
+  let ort = core.load_onnxruntime(filename="./libonnxruntime.so")
+  let open_jtalk = @voicevox.OpenJtalk::new(core, "./open_jtalk_dic_utf_8-1.11")
+  let model = @voicevox.VoiceModelFile::open(core, "./model.vvm")
+  let synth = @voicevox.Synthesizer::new(core, ort, open_jtalk)
+  synth.load_voice_model(model)
+  let wav = synth.tts("こんにちは", 3)
+  @voicevox.write_wav_file("out.wav", wav)
+}
 ```
 
 Use option constructors when overriding defaults:
@@ -27,7 +30,7 @@ let options = @voicevox.InitializeOptions::new(
 )
 
 ///|
-let synth = try! @voicevox.Synthesizer::new(core, ort, open_jtalk, options~)
+let synth = @voicevox.Synthesizer::new(core, ort, open_jtalk, options~)
 ```
 
 ## CLI smoke test

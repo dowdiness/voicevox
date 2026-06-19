@@ -1,8 +1,15 @@
 ///|
 test "VoiceModelId validates length" {
   let bytes = Bytes::make(16, b'\x00')
-  let id = try! @voicevox.VoiceModelId::from_bytes(bytes)
-  assert_eq(id.to_bytes().length(), 16)
+  let id_result : Result[@voicevox.VoiceModelId, @voicevox.VoicevoxError] = Ok(
+    @voicevox.VoiceModelId::from_bytes(bytes),
+  ) catch {
+    error => Err(error)
+  }
+  match id_result {
+    Ok(id) => assert_eq(id.to_bytes().length(), 16)
+    Err(_) => fail("expected valid VoiceModelId")
+  }
   try @voicevox.VoiceModelId::from_bytes(b"bad") catch {
     _ => ()
   } noraise {
@@ -38,9 +45,18 @@ test "option constructors are available without public record construction" {
 
 ///|
 test "write_wav_file writes bytes" {
-  try! @voicevox.write_wav_file(
-    "_build/voicevox_write_wav_file_test.wav", b"RIFF\x04\x00\x00\x00WAVE",
-  )
+  let result : Result[Unit, @voicevox.VoicevoxError] = try {
+    @voicevox.write_wav_file(
+      "_build/voicevox_write_wav_file_test.wav", b"RIFF\x04\x00\x00\x00WAVE",
+    )
+    Ok(())
+  } catch {
+    error => Err(error)
+  }
+  match result {
+    Ok(_) => ()
+    Err(_) => fail("expected write_wav_file to succeed")
+  }
 }
 
 ///|

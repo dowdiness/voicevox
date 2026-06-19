@@ -24,21 +24,40 @@ fn assert_wav_header(wav : Bytes) -> Unit raise {
 }
 
 ///|
+fn run_real_synthesis_smoke(
+  core_path : String,
+  onnxruntime_path : String,
+  dict_dir : String,
+  model_path : String,
+  style_id_text : String,
+) -> Unit raise {
+  let style_id : UInt = @strconv.from_str(style_id_text)
+  let core = @voicevox.Core::load(core_path)
+  let onnxruntime = core.load_onnxruntime(filename=onnxruntime_path)
+  let open_jtalk = @voicevox.OpenJtalk::new(core, dict_dir)
+  let model = @voicevox.VoiceModelFile::open(core, model_path)
+  let synthesizer = @voicevox.Synthesizer::new(core, onnxruntime, open_jtalk)
+  synthesizer.load_voice_model(model)
+  let wav = synthesizer.tts("こんにちは", style_id)
+  assert_wav_header(wav)
+  @voicevox.write_wav_file("_build/voicevox_smoke.wav", wav)
+}
+
+///|
 test "VOICEVOX real synthesis smoke test" {
   match all_integration_env() {
     Some((core_path, onnxruntime_path, dict_dir, model_path, style_id_text)) => {
-      let style_id : UInt = try! @strconv.from_str(style_id_text)
-      let core = try! @voicevox.Core::load(core_path)
-      let onnxruntime = try! core.load_onnxruntime(filename=onnxruntime_path)
-      let open_jtalk = try! @voicevox.OpenJtalk::new(core, dict_dir)
-      let model = try! @voicevox.VoiceModelFile::open(core, model_path)
-      let synthesizer = try! @voicevox.Synthesizer::new(
-        core, onnxruntime, open_jtalk,
-      )
-      try! synthesizer.load_voice_model(model)
-      let wav = try! synthesizer.tts("こんにちは", style_id)
-      assert_wav_header(wav)
-      try! @voicevox.write_wav_file("_build/voicevox_smoke.wav", wav)
+      let result : Result[Unit, Error] = Ok(
+        run_real_synthesis_smoke(
+          core_path, onnxruntime_path, dict_dir, model_path, style_id_text,
+        ),
+      ) catch {
+        error => Err(error)
+      }
+      match result {
+        Ok(_) => ()
+        Err(error) => fail("VOICEVOX smoke test failed: \{to_repr(error)}")
+      }
     }
     None => ()
   }
