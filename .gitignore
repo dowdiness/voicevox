@@ -4,4 +4,4 @@ target/
 target
 .mooncakes/
 .moonagent/
-.pi/voicevox-tts.json
+tools/pi/voicevox-tts.json

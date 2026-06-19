@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "projectDir": "/absolute/path/to/voicevox/voicevox_moonbit",
+  "core": "/absolute/path/to/voicevox/_build/voicevox-core-download/voicevox_core/c_api/lib/libvoicevox_core.so",
+  "onnxruntime": "/absolute/path/to/voicevox/_build/voicevox-core-download/voicevox_core/onnxruntime/lib/libvoicevox_onnxruntime.so.1.17.3",
+  "dict": "/absolute/path/to/voicevox/_build/voicevox-core-download/voicevox_core/dict/open_jtalk_dic_utf_8-1.11",
+  "model": "/absolute/path/to/voicevox/_build/voicevox-core-download/voicevox_core/models/vvms/0.vvm",
+  "styleId": 3,
+  "maxChars": 500,
+  "stripCodeBlocks": true,
+  "playerCommands": [
+    ["paplay"],
+    ["ffplay", "-autoexit", "-nodisp"]
+  ]
+}

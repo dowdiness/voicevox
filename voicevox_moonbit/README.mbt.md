@@ -68,16 +68,43 @@ let options = @voicevox.InitializeOptions(
 let synth = @voicevox.Synthesizer(core, ort, open_jtalk, options~)
 ```
 
-## CLI smoke test
+## Getting compatible VOICEVOX assets
+
+Use the official VOICEVOX Core Downloader so the C API, VOICEVOX ONNX Runtime, OpenJTalk dictionary, and VVM model versions match. Do not vendor these downloaded artifacts in this repository; keep them in `_build/` or another local-only directory.
+
+Linux x64 CPU example from the repository root:
+
+```sh
+mkdir -p _build/voicevox-core-download
+cd _build/voicevox-core-download
+curl -sSfL https://github.com/VOICEVOX/voicevox_core/releases/latest/download/download-linux-x64 -o download
+chmod +x download
+./download --devices cpu --only c-api onnxruntime dict models --models-pattern 0.vvm
+```
+
+The downloader shows the applicable terms for VOICEVOX ONNX Runtime and voice models. Read them and only answer yes if you agree. The model and generated voices also require the appropriate credit, for example `VOICEVOX:ずんだもん` when using ずんだもん.
+
+With the default output directory, the useful paths are:
+
+```text
+_build/voicevox-core-download/voicevox_core/c_api/lib/libvoicevox_core.so
+_build/voicevox-core-download/voicevox_core/onnxruntime/lib/libvoicevox_onnxruntime.so.1.17.3
+_build/voicevox-core-download/voicevox_core/dict/open_jtalk_dic_utf_8-1.11
+_build/voicevox-core-download/voicevox_core/models/vvms/0.vvm
+```
+
+The ONNX Runtime patch version in the filename may change; use the actual file under `voicevox_core/onnxruntime/lib/`. For `0.vvm`, `style-id 3` is ずんだもん ノーマル.
+
+## CLI
 
 The repository includes a small CLI in `cmd/synthesize`. It uses `moonbitlang/core/argparse` and `@voicevox.write_wav_file` to synthesize speech and write a WAV file:
 
 ```sh
 moon run --target native cmd/synthesize -- \
-  --core ./libvoicevox_core.so \
-  --onnxruntime ./libonnxruntime.so \
-  --dict ./open_jtalk_dic_utf_8-1.11 \
-  --model ./model.vvm \
+  --core ../_build/voicevox-core-download/voicevox_core/c_api/lib/libvoicevox_core.so \
+  --onnxruntime ../_build/voicevox-core-download/voicevox_core/onnxruntime/lib/libvoicevox_onnxruntime.so.1.17.3 \
+  --dict ../_build/voicevox-core-download/voicevox_core/dict/open_jtalk_dic_utf_8-1.11 \
+  --model ../_build/voicevox-core-download/voicevox_core/models/vvms/0.vvm \
   --style-id 3 \
   --text 'こんにちは' \
   --out out.wav
@@ -91,14 +118,15 @@ moon run --target native cmd/synthesize -- --help
 
 ## Pi extension
 
-This repository includes a project-local pi extension at `.pi/extensions/voicevox-tts.ts`. It can read assistant responses aloud by calling `cmd/synthesize` and playing the generated WAV.
+This repository includes an optional pi extension at [`../tools/pi/voicevox-tts.ts`](../tools/pi/voicevox-tts.ts). It can read assistant responses aloud by calling `cmd/synthesize` and playing the generated WAV. It is not auto-loaded as a project-local extension; load it explicitly when you want it.
 
 Setup:
 
-1. Copy `.pi/voicevox-tts.example.json` to `.pi/voicevox-tts.json` and edit the paths, or keep your personal config at `~/.pi/agent/voicevox-tts.json`.
-2. Reload pi from this repository with `/reload` or restart pi.
-3. Check the extension with `/voicevox-tts status`.
-4. Run `/voicevox-tts test 読み上げテスト`.
+1. Download compatible assets with the VOICEVOX Core Downloader as shown above. Keep them local and do not commit or redistribute them from this repository.
+2. Copy `../tools/pi/voicevox-tts.example.json` to `../tools/pi/voicevox-tts.json` and edit the absolute paths, or keep your personal config at `~/.pi/agent/voicevox-tts.json`.
+3. Start pi from the repository root with `pi -e tools/pi/voicevox-tts.ts`, or add that extension path to your own pi setup.
+4. Check the extension with `/voicevox-tts status`.
+5. Run `/voicevox-tts test 読み上げテスト`.
 
 Commands:
 
@@ -110,7 +138,7 @@ Commands:
 /voicevox-tts test 読み上げテスト
 ```
 
-The local `.pi/voicevox-tts.json` file is ignored by Git because it contains machine-specific paths.
+The local `../tools/pi/voicevox-tts.json` file is ignored by Git because it contains machine-specific paths.
 
 ## Testing
 
@@ -123,10 +151,10 @@ moon test --target native
 The real synthesis smoke test is skipped unless all required environment variables are set:
 
 ```sh
-VOICEVOX_CORE_LIB=./libvoicevox_core.so \
-VOICEVOX_ONNXRUNTIME_LIB=./libonnxruntime.so \
-VOICEVOX_OPENJTALK_DICT=./open_jtalk_dic_utf_8-1.11 \
-VOICEVOX_VVM=./model.vvm \
+VOICEVOX_CORE_LIB=../_build/voicevox-core-download/voicevox_core/c_api/lib/libvoicevox_core.so \
+VOICEVOX_ONNXRUNTIME_LIB=../_build/voicevox-core-download/voicevox_core/onnxruntime/lib/libvoicevox_onnxruntime.so.1.17.3 \
+VOICEVOX_OPENJTALK_DICT=../_build/voicevox-core-download/voicevox_core/dict/open_jtalk_dic_utf_8-1.11 \
+VOICEVOX_VVM=../_build/voicevox-core-download/voicevox_core/models/vvms/0.vvm \
 VOICEVOX_STYLE_ID=3 \
 moon test --target native
 ```

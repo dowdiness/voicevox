@@ -51,6 +51,16 @@ pub fn InitializeOptions::default() -> InitializeOptions {
 }
 
 ///|
+fn InitializeOptions::or_default(
+  options : InitializeOptions?,
+) -> InitializeOptions {
+  match options {
+    Some(options) => options
+    None => InitializeOptions::default()
+  }
+}
+
+///|
 pub fn InitializeOptions::acceleration_mode(
   self : InitializeOptions,
 ) -> AccelerationMode {
@@ -85,6 +95,16 @@ pub fn LoadVoiceModelOptions::default() -> LoadVoiceModelOptions {
 }
 
 ///|
+fn LoadVoiceModelOptions::or_default(
+  options : LoadVoiceModelOptions?,
+) -> LoadVoiceModelOptions {
+  match options {
+    Some(options) => options
+    None => LoadVoiceModelOptions::default()
+  }
+}
+
+///|
 pub fn LoadVoiceModelOptions::on_existing(
   self : LoadVoiceModelOptions,
 ) -> OnExistingVoiceModelId {
@@ -109,6 +129,16 @@ pub fn SynthesisOptions::default() -> SynthesisOptions {
 }
 
 ///|
+fn SynthesisOptions::or_default(
+  options : SynthesisOptions?,
+) -> SynthesisOptions {
+  match options {
+    Some(options) => options
+    None => SynthesisOptions::default()
+  }
+}
+
+///|
 pub fn SynthesisOptions::enable_interrogative_upspeak(
   self : SynthesisOptions,
 ) -> Bool {
@@ -130,6 +160,14 @@ pub fn TtsOptions::TtsOptions(
 ///|
 pub fn TtsOptions::default() -> TtsOptions {
   TtsOptions()
+}
+
+///|
+fn TtsOptions::or_default(options : TtsOptions?) -> TtsOptions {
+  match options {
+    Some(options) => options
+    None => TtsOptions::default()
+  }
 }
 
 ///|

@@ -25,18 +25,18 @@ jobs:
         run: moon version --all
 
       - name: Update MoonBit dependencies
-        run: moon update
+        run: moon -C voicevox_moonbit update
 
       - name: Check formatting
-        run: moon fmt --check
+        run: moon -C voicevox_moonbit fmt --check
 
       - name: Check generated interfaces
         run: |
-          moon info
+          moon -C voicevox_moonbit info
           git diff --exit-code -- '*.mbti'
 
       - name: Check native build
-        run: moon check --target native
+        run: moon -C voicevox_moonbit check --target native --deny-warn
 
       - name: Run native tests
-        run: moon test --target native
+        run: moon -C voicevox_moonbit test --target native

@@ -5,9 +5,12 @@
  * repository's cmd/synthesize and then playing the generated WAV.
  *
  * Config lookup, later entries override earlier ones:
- *   1. ~/.pi/agent/voicevox-tts.json
- *   2. <cwd>/.pi/voicevox-tts.json
- *   3. VOICEVOX_* environment variables
+ *   1. defaults from VOICEVOX_* environment variables
+ *   2. ~/.pi/agent/voicevox-tts.json
+ *   3. <cwd>/tools/pi/voicevox-tts.json
+ *
+ * Load explicitly with:
+ *   pi -e tools/pi/voicevox-tts.ts
  *
  * Commands:
  *   /voicevox-tts status
@@ -22,7 +25,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { execFile } from "node:child_process";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
-import { CONFIG_DIR_NAME, getAgentDir } from "@earendil-works/pi-coding-agent";
+import { getAgentDir } from "@earendil-works/pi-coding-agent";
 
 interface VoicevoxTtsConfig {
 	enabled: boolean;
@@ -43,10 +46,16 @@ interface LoadedConfig {
 	savePath: string;
 }
 
+function defaultProjectDir(cwd: string): string {
+	const nestedModule = join(cwd, "voicevox_moonbit");
+	if (existsSync(join(nestedModule, "moon.mod"))) return nestedModule;
+	return cwd;
+}
+
 function defaultConfig(cwd: string): VoicevoxTtsConfig {
 	return {
 		enabled: true,
-		projectDir: process.env.VOICEVOX_MOONBIT_PROJECT_DIR || cwd,
+		projectDir: process.env.VOICEVOX_MOONBIT_PROJECT_DIR || defaultProjectDir(cwd),
 		core: process.env.VOICEVOX_CORE_LIB || "",
 		onnxruntime: process.env.VOICEVOX_ONNXRUNTIME_LIB || "",
 		dict: process.env.VOICEVOX_OPENJTALK_DICT || "",
@@ -63,7 +72,7 @@ function globalConfigPath(): string {
 }
 
 function projectConfigPath(cwd: string): string {
-	return join(cwd, CONFIG_DIR_NAME, "voicevox-tts.json");
+	return join(cwd, "tools", "pi", "voicevox-tts.json");
 }
 
 function readConfigFile(path: string): Partial<VoicevoxTtsConfig> {

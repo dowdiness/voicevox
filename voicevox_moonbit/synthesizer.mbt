@@ -5,10 +5,7 @@ pub fn Synthesizer::Synthesizer(
   open_jtalk : OpenJtalk,
   options? : InitializeOptions,
 ) -> Synthesizer raise VoicevoxError {
-  let opts = match options {
-    Some(options) => options
-    None => InitializeOptions::default()
-  }
+  let opts = InitializeOptions::or_default(options)
   validate_cpu_num_threads(opts.cpu_num_threads)
   let handle = ffi_synthesizer_new(
     core.handle,
@@ -27,10 +24,7 @@ pub fn Synthesizer::load_voice_model(
   model : VoiceModelFile,
   options? : LoadVoiceModelOptions,
 ) -> Unit raise VoicevoxError {
-  let opts = match options {
-    Some(options) => options
-    None => LoadVoiceModelOptions::default()
-  }
+  let opts = LoadVoiceModelOptions::or_default(options)
   check_synthesizer(
     self.handle,
     ffi_synthesizer_load_voice_model(
@@ -182,10 +176,7 @@ pub fn Synthesizer::synthesis(
   style_id : UInt,
   options? : SynthesisOptions,
 ) -> Bytes raise VoicevoxError {
-  let opts = match options {
-    Some(options) => options
-    None => SynthesisOptions::default()
-  }
+  let opts = SynthesisOptions::or_default(options)
   self.synth_wav(
     audio_query_json,
     style_id,
@@ -201,10 +192,7 @@ pub fn Synthesizer::tts(
   style_id : UInt,
   options? : TtsOptions,
 ) -> Bytes raise VoicevoxError {
-  let opts = match options {
-    Some(options) => options
-    None => TtsOptions::default()
-  }
+  let opts = TtsOptions::or_default(options)
   self.synth_wav(
     text,
     style_id,
@@ -220,10 +208,7 @@ pub fn Synthesizer::tts_from_kana(
   style_id : UInt,
   options? : TtsOptions,
 ) -> Bytes raise VoicevoxError {
-  let opts = match options {
-    Some(options) => options
-    None => TtsOptions::default()
-  }
+  let opts = TtsOptions::or_default(options)
   self.synth_wav(
     kana,
     style_id,
