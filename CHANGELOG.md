@@ -4,7 +4,7 @@
 
 `dowdiness/voicevox_moonbit` の初回リリースです。
 
-このリリースでは、VOICEVOX Core 向けの MoonBit native FFI bindings を提供します。VOICEVOX Core と VOICEVOX ONNX Runtime の動的ロード、OpenJTalk 辞書の初期化、`.vvm` 音声モデルの読み込み、テキスト音声合成、WAV 出力、小さな native CLI を含みます。
+このリリースでは、VOICEVOX Core 向けの MoonBit の native FFI バインディングを提供します。VOICEVOX Core と VOICEVOX ONNX Runtime の動的ロード、OpenJTalk 辞書の初期化、`.vvm` 音声モデルの読み込み、テキスト音声合成、WAV 出力、小さな native CLI ツールを含みます。
 
 また、pi の応答を VOICEVOX で読み上げる pi extension も含みます。
 

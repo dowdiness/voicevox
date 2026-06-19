@@ -1,20 +1,17 @@
-# VOICEVOX assets
+# VOICEVOX 関連ファイル
 
-`dowdiness/voicevox_moonbit` does not include VOICEVOX Core binaries, VOICEVOX ONNX Runtime, OpenJTalk dictionaries, or `.vvm` voice models. Download those assets locally with the official VOICEVOX Core Downloader and keep them out of Git.
+[English](assets.en.md)
 
-## Terms and redistribution
+`dowdiness/voicevox_moonbit` は、VOICEVOX Core のバイナリ、VOICEVOX ONNX Runtime、OpenJTalk 辞書、`.vvm` 音声モデルを含みません。これらの関連ファイルは公式の VOICEVOX Core Downloader でローカルにダウンロードし、Git 管理外に置いてください。
 
-The downloader displays the terms that apply to the selected artifacts. Read them and only proceed if you agree.
+## 利用規約と再配布
 
-In particular:
+音声モデル（VVM ファイル）には利用規約が存在します。詳しくはダウンロードしたファイル内の README と[VOICEVOX コア ユーザーガイド](https://github.com/VOICEVOX/voicevox_core/blob/main/docs/guide/user/usage.md)を参照して下さい。
 
-- Do not commit downloaded binaries, dictionaries, or `.vvm` files to this repository.
-- Do not redistribute downloaded voice models from this repository.
-- Generated voices require the appropriate credit. For example, when using ずんだもん, use `VOICEVOX:ずんだもん`.
 
-## Linux x64 CPU example
+## Linux x64 CPU の例
 
-Run this from the repository root:
+リポジトリルートから実行します。
 
 ```sh
 mkdir -p _build/voicevox-core-download
@@ -24,11 +21,11 @@ chmod +x download
 ./download --devices cpu --only c-api onnxruntime dict models --models-pattern 0.vvm
 ```
 
-The files remain under `_build/`, which is ignored by Git.
+ファイルは Git 管理外の `_build/` 配下に置かれます。
 
-## Expected paths
+## 想定されるパス
 
-With the default downloader output directory, useful paths are:
+Downloader のデフォルト出力先を使う場合、主なパスは次の通りです。
 
 ```text
 _build/voicevox-core-download/voicevox_core/c_api/lib/libvoicevox_core.so
@@ -37,23 +34,21 @@ _build/voicevox-core-download/voicevox_core/dict/open_jtalk_dic_utf_8-1.11
 _build/voicevox-core-download/voicevox_core/models/vvms/0.vvm
 ```
 
-The ONNX Runtime patch version in the filename may change. Use the actual file under:
+ONNX Runtime のパッチバージョンは変わる可能性があります。実際に存在するファイルを次のディレクトリから選んでください。
 
 ```text
 _build/voicevox-core-download/voicevox_core/onnxruntime/lib/
 ```
 
-For the downloaded `0.vvm`, `style-id 3` is ずんだもん ノーマル.
+## トラブルシューティング
 
-## Troubleshooting
+### `.vvm` を読み込めない場合
 
-### `vvm_format_version=1` / model format error
-
-The VOICEVOX application may contain older `.vvm` files. If VOICEVOX Core reports that `vvm_format_version=1` is deprecated, use a `.vvm` downloaded by the VOICEVOX Core Downloader instead.
+現在の VOICEVOX Core と互換性のない `.vvm` を指定すると、`vvm_format_version=1` や「廃止された形式です」といったエラーが出ることがあります。必ず VOICEVOX Core Downloader でダウンロードした `.vvm` を使うようにしてください。
 
 ### `This ONNX Runtime does not support "vv-bin" format`
 
-Use VOICEVOX ONNX Runtime from the downloader, not a generic ONNX Runtime build. The library is usually named like:
+汎用 ONNX Runtime ではなく、Downloader で取得した VOICEVOX ONNX Runtime を使ってください。通常は次のような名前です。
 
 ```text
 libvoicevox_onnxruntime.so.1.17.3

@@ -2,39 +2,31 @@
 
 [![CI](https://github.com/dowdiness/voicevox_moonbit/actions/workflows/ci.yml/badge.svg)](https://github.com/dowdiness/voicevox_moonbit/actions/workflows/ci.yml)
 
-MoonBit native FFI bindings for [VOICEVOX Core](https://github.com/VOICEVOX/voicevox_core).
+[VOICEVOX Core](https://github.com/VOICEVOX/voicevox_core) 向けの MoonBit の native FFI バインディングです。
 
-This package targets MoonBit's `native` backend. It loads `libvoicevox_core` dynamically at runtime, so building the MoonBit package does not require VOICEVOX Core headers or link-time libraries. Running synthesis requires compatible VOICEVOX Core, VOICEVOX ONNX Runtime, an OpenJTalk dictionary, and a `.vvm` voice model.
+[English](README.en.mbt.md)
 
-## Requirements
+このパッケージは MoonBit の `native` backend 向けです。実行時に `libvoicevox_core` を動的ロードするため、MoonBit パッケージのビルド時には VOICEVOX Core のヘッダーやリンク時ライブラリは不要です。実際に音声合成を行うには、互換性のある VOICEVOX Core、VOICEVOX ONNX Runtime、OpenJTalk 辞書、`.vvm` 音声モデルが必要です。
+
+## 必要なもの
 
 - MoonBit toolchain
-- VOICEVOX Core C API shared library
-- VOICEVOX-compatible ONNX Runtime shared library
-- OpenJTalk dictionary directory
-- VOICEVOX `.vvm` voice model file
+- VOICEVOX Core C API の共有ライブラリ
+- VOICEVOX 対応 ONNX Runtime の共有ライブラリ
+- OpenJTalk 辞書ディレクトリ
+- VOICEVOX `.vvm` 音声モデルファイル
 
-Use the official VOICEVOX Core Downloader for matching assets. See [../docs/assets.md](../docs/assets.md). This repository does not vendor or redistribute VOICEVOX binaries, dictionaries, or voice models.
+必要な VOICEVOX 関連ファイルは、公式の VOICEVOX Core Downloader で揃えてください。詳しくは [../docs/assets.md](../docs/assets.md) を参照してください。このリポジトリでは、VOICEVOX のバイナリ、辞書、音声モデルを同梱・再配布しません。
 
-## Compatibility
+## 互換性
 
-- MoonBit target: `native` only.
-- Linux is the primary tested environment.
-- macOS and Windows dynamic-loader paths exist in the native stubs, but should be treated as experimental until real synthesis tests are added for those platforms.
-- Expected C API surface includes the current `voicevox_synthesizer_*`, `voicevox_voice_model_file_*`, `voicevox_open_jtalk_rc_*`, `voicevox_json_free`, and `voicevox_wav_free` symbols used by the bindings.
-- If your `libvoicevox_core` does not export `voicevox_onnxruntime_load_once`, use a VOICEVOX Core C API build with dynamic ONNX Runtime loading enabled.
+- MoonBit target は `native` のみです。
+- 主に Linux でテストしています。
+- native stub には Linux/Unix、macOS、Windows 向けの動的ロード処理があります。ただし、macOS と Windows は実際の動作確認はしていません。
+- この bindings は、現在の `voicevox_synthesizer_*`、`voicevox_voice_model_file_*`、`voicevox_open_jtalk_rc_*`、`voicevox_json_free`、`voicevox_wav_free` などの C API symbol を想定しています。
+- `libvoicevox_core` が `voicevox_onnxruntime_load_once` を export していない場合は、動的 ONNX Runtime loading が有効な VOICEVOX Core C API build を使ってください。
 
-## Import
-
-Use an import alias if you want the shorter `@voicevox` package qualifier:
-
-```moonbit nocheck
-import {
-  "dowdiness/voicevox_moonbit" @voicevox,
-}
-```
-
-## Library example
+## ライブラリの例
 
 ```mbt nocheck
 ///|
@@ -57,7 +49,7 @@ fn synthesize() -> Unit raise {
 }
 ```
 
-Use option constructors when overriding defaults:
+デフォルト値を変更したい場合は option constructor を使います。
 
 ```mbt nocheck
 ///|
@@ -72,7 +64,7 @@ let synth = @voicevox.Synthesizer(core, ort, open_jtalk, options~)
 
 ## CLI
 
-The repository includes a small CLI in `cmd/synthesize`:
+`cmd/synthesize` に小さな CLI があります。
 
 ```sh
 moon run --target native cmd/synthesize -- \
@@ -85,31 +77,31 @@ moon run --target native cmd/synthesize -- \
   --out out.wav
 ```
 
-Run the CLI help for the full option list:
+利用できる option は CLI の help で確認できます。
 
 ```sh
 moon run --target native cmd/synthesize -- --help
 ```
 
-## Pi extension
+## pi extension
 
-An optional pi extension lives at [`../tools/pi/voicevox-tts.ts`](../tools/pi/voicevox-tts.ts). It is loaded explicitly, not as a project-local auto extension:
+pi extension が [`../tools/pi/voicevox-tts.ts`](../tools/pi/voicevox-tts.ts) にあります。使う場合は下記のコマンドで読み込んでください。
 
 ```sh
 pi -e tools/pi/voicevox-tts.ts
 ```
 
-See [../docs/pi-extension.md](../docs/pi-extension.md) for setup and commands.
+設定とコマンドについては [../tools/pi/README.md](../tools/pi/README.md) を参照してください。
 
-## Testing
+## テスト
 
-Unit tests that do not require real VOICEVOX assets:
+実際の VOICEVOX 関連ファイルを必要としない unit test は次のコマンドで実行できます。
 
 ```sh
 moon test --target native
 ```
 
-Real synthesis test with local assets:
+ローカルにダウンロードした VOICEVOX 関連ファイルを使って実際の音声合成テストを行う場合は、次の環境変数を設定します。
 
 ```sh
 VOICEVOX_CORE_LIB=../_build/voicevox-core-download/voicevox_core/c_api/lib/libvoicevox_core.so \
@@ -120,10 +112,10 @@ VOICEVOX_STYLE_ID=3 \
 moon test --target native
 ```
 
-When enabled, the integration test synthesizes `こんにちは`, checks for a RIFF/WAVE header, and writes `voicevox_smoke.wav` in the package working directory.
+有効化された場合、integration test は `こんにちは` を合成し、RIFF/WAVE header を確認して、パッケージの作業ディレクトリに `voicevox_smoke.wav` を書き出します。
 
-## Notes
+## 補足
 
-- The public API is intentionally close to the VOICEVOX Core C API.
-- JSON-returning VOICEVOX Core functions return JSON as `String`; callers can decode it with their preferred JSON package.
-- Generated WAV bytes are returned as `Bytes`. Use `write_wav_file` or your own file I/O to persist them.
+- Public API は意図的に VOICEVOX Core C API に近い形にしています。
+- JSON を返す VOICEVOX Core 関数は `String` として JSON を返します。必要に応じて好きな JSON package で decode してください。
+- 生成された WAV は `Bytes` として返されます。保存する場合は `write_wav_file` か、任意の file I/O を使ってください。
