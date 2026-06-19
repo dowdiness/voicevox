@@ -45,7 +45,9 @@ import {
 ///|
 fn synthesize() -> Unit raise {
   let core = @voicevox.Core::load("./libvoicevox_core.so")
-  let ort = core.load_onnxruntime(filename="./libvoicevox_onnxruntime.so.1.17.3")
+  let ort = core.load_onnxruntime(
+    filename="./libvoicevox_onnxruntime.so.1.17.3",
+  )
   let open_jtalk = @voicevox.OpenJtalk(core, "./open_jtalk_dic_utf_8-1.11")
   let model = @voicevox.VoiceModelFile::open(core, "./0.vvm")
   let synth = @voicevox.Synthesizer(core, ort, open_jtalk)
