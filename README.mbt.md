@@ -1,5 +1,7 @@
 # dowdiness/voicevox_moonbit
 
+[![CI](https://github.com/dowdiness/voicevox_moonbit/actions/workflows/ci.yml/badge.svg)](https://github.com/dowdiness/voicevox_moonbit/actions/workflows/ci.yml)
+
 MoonBit native FFI bindings for [VOICEVOX Core](https://github.com/VOICEVOX/voicevox_core).
 
 This package targets MoonBit's `native` backend. It loads `libvoicevox_core` dynamically at runtime, so building the MoonBit package does not require VOICEVOX Core headers or link-time libraries. Running synthesis still requires the VOICEVOX Core shared library, ONNX Runtime, an OpenJTalk dictionary, and `.vvm` voice model files.
