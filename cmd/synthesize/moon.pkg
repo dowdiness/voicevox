@@ -1,0 +1,12 @@
+import {
+  "dowdiness/voicevox",
+  "moonbitlang/core/argparse",
+  "moonbitlang/core/strconv",
+}
+
+supported_targets = "+native"
+
+options(
+  "is-main": true,
+  targets: { "main.mbt": [ "native" ] },
+)

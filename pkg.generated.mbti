@@ -1,0 +1,109 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "dowdiness/voicevox"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn write_wav_file(String, Bytes) -> Unit raise VoicevoxError
+
+// Errors
+pub(all) suberror VoicevoxError {
+  LibraryLoadError(String)
+  ApiError(code~ : Int, message~ : String)
+  InvalidVoiceModelIdLength(Int)
+  WriteFileError(String)
+} derive(Eq, @debug.Debug)
+
+// Types and methods
+pub(all) enum AccelerationMode {
+  Auto
+  Cpu
+  Gpu
+} derive(Eq, @debug.Debug)
+
+pub type Core
+pub fn Core::audio_query_from_accent_phrases(Self, String) -> String raise VoicevoxError
+pub fn Core::get_version(Self) -> String
+pub fn Core::load(String) -> Self raise VoicevoxError
+pub fn Core::load_onnxruntime(Self, filename? : String) -> Onnxruntime raise VoicevoxError
+pub fn Core::onnxruntime_unversioned_filename(Self) -> String
+pub fn Core::onnxruntime_versioned_filename(Self) -> String
+pub fn Core::validate_accent_phrase(Self, String) -> Unit raise VoicevoxError
+pub fn Core::validate_audio_query(Self, String) -> Unit raise VoicevoxError
+pub fn Core::validate_frame_audio_query(Self, String) -> Unit raise VoicevoxError
+pub fn Core::validate_frame_phoneme(Self, String) -> Unit raise VoicevoxError
+pub fn Core::validate_mora(Self, String) -> Unit raise VoicevoxError
+pub fn Core::validate_note(Self, String) -> Unit raise VoicevoxError
+pub fn Core::validate_score(Self, String) -> Unit raise VoicevoxError
+
+pub struct InitializeOptions {
+  acceleration_mode : AccelerationMode
+  cpu_num_threads : Int
+} derive(Eq, @debug.Debug)
+pub fn InitializeOptions::default() -> Self
+pub fn InitializeOptions::new(acceleration_mode? : AccelerationMode, cpu_num_threads? : Int) -> Self
+
+pub struct LoadVoiceModelOptions {
+  on_existing : OnExistingVoiceModelId
+} derive(Eq, @debug.Debug)
+pub fn LoadVoiceModelOptions::default() -> Self
+pub fn LoadVoiceModelOptions::new(on_existing? : OnExistingVoiceModelId) -> Self
+
+pub(all) enum OnExistingVoiceModelId {
+  ExistingError
+  Reload
+  Skip
+} derive(Eq, @debug.Debug)
+
+pub type Onnxruntime
+pub fn Onnxruntime::supported_devices_json(Self) -> String raise VoicevoxError
+
+pub type OpenJtalk
+pub fn OpenJtalk::analyze(Self, String) -> String raise VoicevoxError
+pub fn OpenJtalk::new(Core, String) -> Self raise VoicevoxError
+
+pub struct SynthesisOptions {
+  enable_interrogative_upspeak : Bool
+} derive(Eq, @debug.Debug)
+pub fn SynthesisOptions::default() -> Self
+pub fn SynthesisOptions::new(enable_interrogative_upspeak? : Bool) -> Self
+
+pub type Synthesizer
+pub fn Synthesizer::create_accent_phrases(Self, String, UInt) -> String raise VoicevoxError
+pub fn Synthesizer::create_accent_phrases_from_kana(Self, String, UInt) -> String raise VoicevoxError
+pub fn Synthesizer::create_audio_query(Self, String, UInt) -> String raise VoicevoxError
+pub fn Synthesizer::create_audio_query_from_kana(Self, String, UInt) -> String raise VoicevoxError
+pub fn Synthesizer::is_gpu_mode(Self) -> Bool
+pub fn Synthesizer::is_loaded_voice_model(Self, VoiceModelId) -> Bool
+pub fn Synthesizer::load_voice_model(Self, VoiceModelFile, options? : LoadVoiceModelOptions) -> Unit raise VoicevoxError
+pub fn Synthesizer::metas_json(Self) -> String raise VoicevoxError
+pub fn Synthesizer::new(Core, Onnxruntime, OpenJtalk, options? : InitializeOptions) -> Self raise VoicevoxError
+pub fn Synthesizer::replace_mora_data(Self, String, UInt) -> String raise VoicevoxError
+pub fn Synthesizer::replace_mora_pitch(Self, String, UInt) -> String raise VoicevoxError
+pub fn Synthesizer::replace_phoneme_length(Self, String, UInt) -> String raise VoicevoxError
+pub fn Synthesizer::synthesis(Self, String, UInt, options? : SynthesisOptions) -> Bytes raise VoicevoxError
+pub fn Synthesizer::tts(Self, String, UInt, options? : TtsOptions) -> Bytes raise VoicevoxError
+pub fn Synthesizer::tts_from_kana(Self, String, UInt, options? : TtsOptions) -> Bytes raise VoicevoxError
+pub fn Synthesizer::unload_voice_model(Self, VoiceModelId) -> Unit raise VoicevoxError
+
+pub struct TtsOptions {
+  enable_interrogative_upspeak : Bool
+} derive(Eq, @debug.Debug)
+pub fn TtsOptions::default() -> Self
+pub fn TtsOptions::new(enable_interrogative_upspeak? : Bool) -> Self
+
+pub type VoiceModelFile
+pub fn VoiceModelFile::id(Self) -> VoiceModelId raise VoicevoxError
+pub fn VoiceModelFile::metas_json(Self) -> String raise VoicevoxError
+pub fn VoiceModelFile::open(Core, String) -> Self raise VoicevoxError
+
+pub struct VoiceModelId(Bytes) derive(Eq, @debug.Debug)
+pub fn VoiceModelId::from_bytes(Bytes) -> Self raise VoicevoxError
+pub fn VoiceModelId::to_bytes(Self) -> Bytes
+
+// Type aliases
+
+// Traits
+

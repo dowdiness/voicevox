@@ -1,0 +1,25 @@
+import {
+  "moonbitlang/core/encoding/utf8",
+}
+
+import {
+  "moonbitlang/core/env",
+  "moonbitlang/core/strconv",
+} for "test"
+
+options(
+  "native-stub": [ "voicevox_core_stub.c", "voicevox_file_stub.c" ],
+  targets: {
+    "native_handles.mbt": [ "native" ],
+    "native_extern.mbt": [ "native" ],
+    "native_helpers.mbt": [ "native" ],
+    "types.mbt": [ "native" ],
+    "voice_model_id.mbt": [ "native" ],
+    "core.mbt": [ "native" ],
+    "voice_model.mbt": [ "native" ],
+    "synthesizer.mbt": [ "native" ],
+    "wav.mbt": [ "native" ],
+    "voicevox_test.mbt": [ "native" ],
+    "voicevox_integration_test.mbt": [ "native" ],
+  },
+)
