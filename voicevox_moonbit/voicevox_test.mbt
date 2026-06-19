@@ -67,7 +67,7 @@ test "InitializeOptions rejects invalid cpu_num_threads" {
 test "write_wav_file writes bytes" {
   let result : Result[Unit, @voicevox_moonbit.VoicevoxError] = try {
     @voicevox_moonbit.write_wav_file(
-      "_build/voicevox_write_wav_file_test.wav", b"RIFF\x04\x00\x00\x00WAVE",
+      "voicevox_write_wav_file_test.wav", b"RIFF\x04\x00\x00\x00WAVE",
     )
     Ok(())
   } catch {

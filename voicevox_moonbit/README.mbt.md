@@ -159,7 +159,7 @@ VOICEVOX_STYLE_ID=3 \
 moon test --target native
 ```
 
-When enabled, the integration test synthesizes `こんにちは`, checks for a RIFF/WAVE header, and writes `_build/voicevox_smoke.wav`.
+When enabled, the integration test synthesizes `こんにちは`, checks for a RIFF/WAVE header, and writes `voicevox_smoke.wav` in the package working directory.
 
 ## Notes
 

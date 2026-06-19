@@ -40,7 +40,7 @@ fn run_real_synthesis_smoke(
   synthesizer.load_voice_model(model)
   let wav = synthesizer.tts("こんにちは", style_id)
   assert_wav_header(wav)
-  @voicevox_moonbit.write_wav_file("_build/voicevox_smoke.wav", wav)
+  @voicevox_moonbit.write_wav_file("voicevox_smoke.wav", wav)
 }
 
 ///|

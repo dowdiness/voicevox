@@ -5,3 +5,5 @@ target
 .mooncakes/
 .moonagent/
 tools/pi/voicevox-tts.json
+voicevox_*.wav
+voicevox_moonbit/voicevox_*.wav
